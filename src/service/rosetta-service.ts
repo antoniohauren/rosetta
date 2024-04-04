@@ -1,5 +1,6 @@
 import { flattenArray } from "../helper/array.helper";
 import { JsonParse } from "../helper/json.helper";
+import { unflattenObject } from "../helper/object.helper";
 import {
   type AddRosettaDto,
   type MyTuple,
@@ -68,6 +69,7 @@ export class RosettaService {
 
   async addRosettaFromFile(lang: RosettaKeys) {
     const data = this.fileService.readFile(lang);
+
     if (!data) {
       return;
     }
@@ -96,13 +98,8 @@ export class RosettaService {
       const category: MyTuple = {};
 
       if (entry.key.includes(".")) {
-        const [k, ...rest] = entry.key.split(".");
-        // console.log(nested.map((v) => ({ [v]: entry[lang] || "" })));
-
-        category[k] = {
-          // TODO: loop thought it
-          [rest[0]]: entry[lang] || "",
-        };
+        const [key, ...rest] = entry.key.split(".");
+        category[key] = unflattenObject(rest, entry[lang] || "");
       } else {
         category[entry.key] = entry[lang] || "";
       }
