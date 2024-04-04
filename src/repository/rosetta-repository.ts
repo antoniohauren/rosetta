@@ -7,7 +7,7 @@ export class RosettaRepository {
     this.init();
   }
 
-  async addTranslation(category: string, key: string, dto: AddRosettaDto) {
+  async addRosetta(category: string, key: string, dto: AddRosettaDto) {
     const { pt_BR, en_US, es_ES, pt_PT } = dto;
 
     for(const lang of Object.values(dto)) {
@@ -33,7 +33,7 @@ export class RosettaRepository {
     }
   }
 
-  async updateTranslation(
+  async updateRosetta(
     category: string,
     key: string,
     dto: Partial<AddRosettaDto>,
@@ -68,7 +68,7 @@ export class RosettaRepository {
     });
   }
 
-  async getAllTranslations() {
+  async getAllRosettas() {
     return Rosetta.find();
   }
 

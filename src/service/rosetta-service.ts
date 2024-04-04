@@ -17,11 +17,11 @@ export class RosettaService {
   ) {}
 
   async addRosetta(category: string, key: string, dto: AddRosettaDto) {
-    return this.repository.addTranslation(category, key, dto);
+    return this.repository.addRosetta(category, key, dto);
   }
 
   async updateRosetta(category: string, key: string, dto: UpdateRosettaDto) {
-    return this.repository.updateTranslation(category, key, dto);
+    return this.repository.updateRosetta(category, key, dto);
   }
 
   async getMissingRosettas() {
@@ -86,7 +86,7 @@ export class RosettaService {
   }
 
   async getSerializedByLang(lang: keyof AddRosettaDto) {
-    const entries = await this.repository.getAllTranslations();
+    const entries = await this.repository.getAllRosettas();
     const result: SerializedRosetta = {};
 
     for (const entry of entries) {
