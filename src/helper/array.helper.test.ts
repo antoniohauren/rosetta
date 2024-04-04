@@ -17,4 +17,19 @@ describe("array-helper", () => {
 
     assert.deepEqual(res, exp);
   });
+
+  it("should flatten multiple times", () => {
+    const input: RawKeyValue[] = [
+      ["key", "value"],
+      ["key", { key1: { key2: { key3: "value3" } } }],
+    ];
+
+    const res = flattenArray(input);
+    const exp = [
+      ["key", "value"],
+      ["key.key1.key2.key3", "value3"],
+    ];
+
+    assert.deepEqual(res, exp);
+  });
 });

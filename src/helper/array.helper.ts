@@ -1,3 +1,5 @@
+import { flattenObject } from "./object.helper";
+
 export type RawKeyValue = [string, string | object];
 export type KeyValue = [string, string];
 
@@ -6,9 +8,10 @@ export function flattenArray(arr: RawKeyValue[]): KeyValue[] {
 
   for (const [key, value] of arr) {
     if (typeof value === "object") {
-      const [oKey, oValue] = Object.entries(value)[0];
-
-      result.push([`${key}.${oKey}`, oValue]);
+      const flattened = flattenObject(value)
+      for(const [nestedKey, nestedValue] of flattened) {
+        result.push([`${key}.${nestedKey}`, nestedValue])
+      }
     } else {
       result.push([key, value]);
     }
