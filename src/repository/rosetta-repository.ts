@@ -10,6 +10,13 @@ export class RosettaRepository {
   async addTranslation(category: string, key: string, dto: AddRosettaDto) {
     const { pt_BR, en_US, es_ES, pt_PT } = dto;
 
+    for(const lang of Object.values(dto)) {
+      if (typeof lang === 'object') {
+        console.log(`[${category} - ${key}], failed! It must be a string`)
+        return;
+      }
+    }
+
     const entry = new Rosetta({
       category,
       key,

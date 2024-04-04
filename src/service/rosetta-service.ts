@@ -1,3 +1,4 @@
+import { JsonParse } from "../helper/json.helper";
 import {
   type AddRosettaDto,
   type Reco,
@@ -42,6 +43,48 @@ export class RosettaService {
     }
   }
 
+  private async loopThoughtEntries(
+    category: string,
+    lang: RosettaKeys,
+    entries: [string, string][],
+  ) {
+    for (const [key, value] of entries) {
+      const found = await this.repository.getRosetta(category, key);
+
+      if (found.length) {
+        await this.updateRosetta(category, key, {
+          [lang]: value,
+        });
+      } else {
+        await this.addRosetta(category, key, {
+          [lang]: value,
+        });
+      }
+    }
+  }
+
+  async addRosettaFromFile(lang: RosettaKeys) {
+    const data = this.fileService.readFile(lang);
+    if (!data) {
+      return;
+    }
+
+    const json = JsonParse<SerializedRosetta>(data);
+    const categories = Object.keys(json);
+
+    for (const category of categories) {
+      const entries = Object.entries(json[category]);
+
+      await this.loopThoughtEntries(category, lang, entries);
+    }
+  }
+
+  async addAllRosettasFromFile() {
+    for ( const k of rosettaKeys) {
+      await this.addRosettaFromFile(k)
+    }
+  }
+
   async getSerializedByLang(lang: keyof AddRosettaDto) {
     const entries = await this.repository.getAllTranslations();
     const result: SerializedRosetta = {};
@@ -49,6 +92,8 @@ export class RosettaService {
     for (const entry of entries) {
       const category: Reco = {};
       category[entry.key] = entry[lang] || "";
+
+      Object.assign(category, result[entry.category])
 
       result[entry.category] = category;
     }

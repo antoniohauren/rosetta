@@ -5,8 +5,11 @@ export class FileService {
 
   readFile(lang: RosettaKeys) {
     const input = "./input";
-
-    return fs.readFileSync(`${input}/${lang}.json`).toString();
+    try {
+      return fs.readFileSync(`${input}/${lang}.json`).toString();
+    } catch(err) {
+      console.log("file not found", `${lang}.json`);
+    }
   }
 
   writeFile(lang: RosettaKeys, data: SerializedRosetta) {
