@@ -2,7 +2,7 @@ import { flattenArray } from "../helper/array.helper";
 import { JsonParse } from "../helper/json.helper";
 import {
   type AddRosettaDto,
-  type Reco,
+  type MyTuple,
   type RosettaKeys,
   type SerializedRosetta,
   type UpdateRosettaDto,
@@ -83,22 +83,33 @@ export class RosettaService {
   }
 
   async addAllRosettasFromFile() {
-    for ( const k of rosettaKeys) {
-      await this.addRosettaFromFile(k)
+    for (const k of rosettaKeys) {
+      await this.addRosettaFromFile(k);
     }
   }
 
   async getSerializedByLang(lang: keyof AddRosettaDto) {
     const entries = await this.repository.getAllRosettas();
-    const result: SerializedRosetta = {};
+    const result: MyTuple = {};
 
     for (const entry of entries) {
-      const category: Reco = {};
-      category[entry.key] = entry[lang] || "";
+      const category: MyTuple = {};
 
-      Object.assign(category, result[entry.category])
+      if (entry.key.includes(".")) {
+        const [k, ...rest] = entry.key.split(".");
+        // console.log(nested.map((v) => ({ [v]: entry[lang] || "" })));
 
-      result[entry.category] = category;
+        category[k] = {
+          // TODO: loop thought it
+          [rest[0]]: entry[lang] || "",
+        };
+      } else {
+        category[entry.key] = entry[lang] || "";
+      }
+
+      Object.assign(category, result[entry.category]);
+
+      result[entry.category] = category as SerializedRosetta;
     }
 
     return result;

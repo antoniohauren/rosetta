@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import type { RosettaKeys, SerializedRosetta } from "../models/rosetta";
+import type { MyTuple, RosettaKeys } from "../models/rosetta";
 
 export class FileService {
 
@@ -12,7 +12,7 @@ export class FileService {
     }
   }
 
-  writeFile(lang: RosettaKeys, data: SerializedRosetta) {
+  writeFile(lang: RosettaKeys, data: MyTuple) {
     const output = "./output";
 
     if (!fs.existsSync(output)) {

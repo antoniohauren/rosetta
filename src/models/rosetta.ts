@@ -10,4 +10,8 @@ export type RosettaKeys = (typeof rosettaKeys)[number];
 
 export type Reco<T = string> = Record<string, T>;
 
-export type SerializedRosetta = Reco<Reco>;
+type StringOrObject = string | { [key: string]: string | object };
+export type MyTuple = Record<string, StringOrObject>;
+
+// TODO: check this type
+export type SerializedRosetta = Record<string, Reco>;
