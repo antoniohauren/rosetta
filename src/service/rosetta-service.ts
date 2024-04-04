@@ -1,3 +1,4 @@
+import { flattenArray } from "../helper/array.helper";
 import { JsonParse } from "../helper/json.helper";
 import {
   type AddRosettaDto,
@@ -48,7 +49,9 @@ export class RosettaService {
     lang: RosettaKeys,
     entries: [string, string][],
   ) {
-    for (const [key, value] of entries) {
+    const flatten = flattenArray(entries);
+
+    for (const [key, value] of flatten) {
       const found = await this.repository.getRosetta(category, key);
 
       if (found.length) {
