@@ -19,7 +19,11 @@ export class RosettaRepository {
       pt_PT,
     });
 
-    await entry.save();
+    try {
+      await entry.save();
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async updateTranslation(
@@ -33,6 +37,12 @@ export class RosettaRepository {
       },
       dto,
     );
+  }
+
+  async getRosetta(category: string, key: string) {
+    return Rosetta.find({
+      $and: [{ category }, { key }],
+    });
   }
 
   async getMissingRosettas() {
