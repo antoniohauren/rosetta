@@ -36,7 +36,7 @@ export class RosettaService {
     this.fileService.writeFile(lang, data);
   }
 
-  async wirteAllFiles() {
+  async writeAllFiles() {
     for (const k of rosettaKeys) {
       await this.writeFileByLang(k);
     }
