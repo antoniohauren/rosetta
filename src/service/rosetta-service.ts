@@ -1,3 +1,4 @@
+import type { Rosetta } from "../database/schema";
 import { flattenArray } from "../helper/array.helper";
 import { JsonParse } from "../helper/json.helper";
 import { unflattenObject } from "../helper/object.helper";
@@ -26,12 +27,27 @@ export class RosettaService {
     return this.repository.updateRosetta(category, key, dto);
   }
 
+  private keyCategoryToArray(rosettas: Rosetta[]) {
+    const result: Record<string, string[]> = {};
+
+    for (const { key, category } of rosettas) {
+      result[category] ??= [];
+      result[category].push(key);
+    }
+
+    return result;
+  }
+
   async getMissingRosettas() {
-    return this.repository.getMissingRosettas();
+    const entries = await this.repository.getMissingRosettas();
+
+    return this.keyCategoryToArray(entries);
   }
 
   async getMissingRosettasByLang(lang: RosettaKeys) {
-    return this.repository.getMissingRosettasByLang(lang);
+    const entries = await this.repository.getMissingRosettasByLang(lang);
+
+    return this.keyCategoryToArray(entries);
   }
 
   async writeFileByLang(lang: RosettaKeys) {
@@ -90,25 +106,30 @@ export class RosettaService {
     }
   }
 
-  async getSerializedByLang(lang: keyof AddRosettaDto) {
+  async getSerializedByLang(lang: RosettaKeys) {
     const entries = await this.repository.getAllRosettas();
     const result: MyTuple = {};
 
     for (const entry of entries) {
-      const category: MyTuple = {};
-
-      if (entry.key.includes(".")) {
-        const [key, ...rest] = entry.key.split(".");
-        category[key] = unflattenObject(rest, entry[lang] || "");
-      } else {
-        category[entry.key] = entry[lang] || "";
-      }
+      const category: MyTuple = this.serialize(entry, lang);
 
       Object.assign(category, result[entry.category]);
-
       result[entry.category] = category as SerializedRosetta;
     }
 
     return result;
+  }
+
+  private serialize(entry: Rosetta, lang: RosettaKeys) {
+    const category: MyTuple = {};
+
+    if (entry.key.includes(".")) {
+      const [key, ...rest] = entry.key.split(".");
+      category[key] = unflattenObject(rest, entry[lang] || "");
+    } else {
+      category[entry.key] = entry[lang] || "";
+    }
+
+    return category;
   }
 }
